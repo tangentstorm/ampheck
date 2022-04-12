@@ -1,0 +1,116 @@
+#+title: list summation
+
+This is a port of the first programming example from the book,
+[[https://www.cs.toronto.edu/~hehner/aPToP/][A Practical Theory Of Programming]] by Eric Hehner to a
+hypothetical language that closely follows his notation, except
+ASCII--fied a little.
+
+#+begin_src text
+def list_sum(L:[int]) -> s:int
+    := s'= ΣL
+    :< s:=0. var n:int. n:=0.
+       s' = s + ΣL[n;..#L]
+       :< if n=#L
+          then '( n=#L  .> s' = s+ ΣL[n;..#L] )
+               :< ok
+          else '( n:##L .> s' = s + Σ[n;..#L] )
+               :< s := s + L n. n:= n + 1.
+                  s' = s + ΣL[n;..#L]
+          fi
+#+end_src
+
+It's a program to sum a list L and put the result in s.
+
+the actual program looks like:
+
+: s:=0. n:=0. LOOP: if (n=#L) then ok else n:=n+1 goto LOOP fi
+
+or with a little extra syntax:
+
+: s:=0. n:=0. while n<#L do. s:=s+L(n). n:=n+1 end.
+
+I think this is an ideal application for a syntax-directed editor,
+because a lot of this text could be derived from context.
+(This is probably why proof assistants tend to be interactive
+and the actual recorded files rather inscruitable.)
+
+In an interactive environment, you'd want to manually write the initial spec, because otherwise it wouldn't know what A was.
+
+So you might type:
+
+: def sumL(L:[int])->s:int := s'=ΣL
+
+And now you've declared your inputs and outputs, and spec for what it does.
+
+Hehner's notation in the book doesn't actually give names to programs, and he uses English prose to declare the input and output parameters, but
+a real language would obviously need a definition syntax.
+
+We don't have a proof obligation at this point, but we do have an implementation obligation. The system should see that we have a spec but it is
+not implemented, and so it should be on our to-do list. (We should be allowed to make as many specifications as we want, and implement them in
+any order... We can only run the parts that are implemented, though.)
+
+Okay, so then we decide to implement this one, and we want to prove that the program implements the spec.
+
+And then we can initialize our variables:
+
+: s'=ΣL :< s:=0. n:=0.
+
+This in not true unless the list is empty, so we should not be able to prove that this is a refinement. So then we say:
+
+:  s' = s + ΣL[n;..#]
+
+Now we can prove that this refines our previous goal.
+(It can be done by substituting n=0 into ΣL[n;..#L] and then
+L[0;..#L] is just L)
+
+This new spec is the only unrefined code we have left, so it becomes our new goal.
+
+we decide to introduce cases, branching on
+
+: if n=#L then ... else ... fi
+
+and then it should generate the two specifications for us:
+
+: then n=#L .> s' = s + ΣL[n;..#L]
+: else n≠#L .> s' = s + ΣL[n;..#L]
+
+I don't think these need to actually show up in the recorded text. They're more like smart comments that can just appear on the screen.
+
+We can prove the "then" case very easily with substitution, because n=#L and
+L[#L;..#L] is an empty list, with sum 0.
+
+then:
+
+: then n=#L
+:   .> s' = s + ΣL[n;..#]
+:   .= s' = s + ΣL[n;..#]
+:   .= s' = s + Σ(empty)
+:   .= s' = s + 0
+:   .= s' = s
+:   .= ok
+
+then on the other side:
+
+: else n≠#L .> s' = s + ΣL[n;..#L]
+
+we can break ΣL[n;..#] into L(n) + L[(n+1);..#L]
+and then we have:
+
+: else n≠#L
+:   .> s'=s +        ΣL[n;..#L]
+:   .= s'=s + L(n) + ΣL[(n+1);..#L]
+:   .= s'=s + L(n). s'= s + ΣL[(n+1);..#L]
+:   .= s'=s + L(n). n:=n+1. s'= s + ΣL[n;..#L]
+
+assuming we know how to implement L(n) and n+1, the first two are programs,
+and the last is where we started before the if, which is now also implemented.
+
+We could then assign some name to this fragment for brevity.
+
+We've now met all our obligations, and we're done.
+
+For my own purposes, the next step would be using this to write and implement the adverb '/',
+which inserts an operator between each item of a list and evaluates.
+
+It's basically the same as this list summation, but abstracting over the operation.
+(Also in most array languages, it evaluates from right to left. I'll have to think about that...)
