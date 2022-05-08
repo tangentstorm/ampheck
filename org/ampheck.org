@@ -1,0 +1,32 @@
+
+- a program definition is an equation with:
+  - a name and signature on the left.
+  - a specification on the right.
+
+- a signature has:
+  - the name of the program
+  - the input and output variables, with types
+
+- a specification is:
+  - an implementable binary expression
+  - relating primed and unprimed variables
+
+- specifications may be written as a
+  series of refinement steps.
+
+- the parser accepts any definition that is well-formed
+  according to the grammar.
+
+- if a program is defined as a series of refinement
+  steps, then the validator will require proof that
+  each step actually follows from the previous.
+
+- if you want to compile the definition, the
+  specification must be a program.
+
+- a program is any specification that the
+  system knows how to execute.
+
+- so, a third checker walks the refined
+  specification and checks that it actually
+  is an implementation.

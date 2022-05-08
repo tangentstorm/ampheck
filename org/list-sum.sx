@@ -1,0 +1,27 @@
+
+
+; proof language:
+; :: :@  .= =  :< .< :> .>
+
+; number theory
+; :sum :range +
+
+; list language
+; :len :at
+
+; program language:
+; :. := (assignment with no other changes) :ok :var
+
+; def list_sum(L:[int]) -> s:int
+(:: (list_sum [(L (List Int))] (s Int))
+    (:@ (= s' (:sum L))
+        (:< (:. (:= s 0) (:var n int) (:= n 0)
+                (:@ (= s' (+ s (:sum (:at L (:range n (:len L))))))
+                    (:< (:if (= n (:len L))
+                             ; then assume n-:#L
+                             (:< (:ok))
+                             ; else assume n~:#L
+                             (:< (:. (:= s (+ s (:at L n)))
+                                     (:= n (+ n 1))
+                                     (= s' (+ s (:sum (:at L (:range n (:len L)))))))))))))))
+

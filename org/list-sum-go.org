@@ -1,0 +1,22 @@
+
+* tests to run on each definition:
+
+** is it well-formed?
+- if text: does it parse?
+- if syndir: are there any invalid slots?
+
+** is it implemented?
+*** is it refined to an implementation?
+*** does it refer to any undefined names?
+
+** are the refinement steps valid?
+
+** do the tests pass?
+- do examples give expected results?
+
+
+* general principles
+- write proofs about algorithms
+- then refine the implementation at lower levels
+(e.g.: you know it works, now implement it with this data structure in this language...)
+
